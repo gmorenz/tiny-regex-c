@@ -14,7 +14,7 @@ PYTHON != if (python --version 2>&1 | grep -q 'Python 2\..*'); then \
           fi
 
 # Flags to pass to compiler
-CFLAGS := -O3 -Wall -Wextra -std=c99 -I.
+CFLAGS := -O3 -Wall -Wextra -std=c99 -I. -L.
 
 all:
 	@$(CC) $(CFLAGS) re.c tests/test1.c         -o tests/test1
@@ -23,6 +23,13 @@ all:
 	@$(CC) $(CFLAGS) re.c tests/test_rand_neg.c -o tests/test_rand_neg
 	@$(CC) $(CFLAGS) re.c tests/test_compile.c  -o tests/test_compile
 
+rust_all:
+	@$(CC) $(CFLAGS) tests/test1.c         -ltiny_regex_rs -o tests/test1
+	@$(CC) $(CFLAGS) tests/test2.c         -ltiny_regex_rs -o tests/test2
+	@$(CC) $(CFLAGS) tests/test_rand.c     -ltiny_regex_rs -o tests/test_rand
+	@$(CC) $(CFLAGS) tests/test_rand_neg.c -ltiny_regex_rs -o tests/test_rand_neg
+	@$(CC) $(CFLAGS) tests/test_compile.c  -ltiny_regex_rs -o tests/test_compile
+
 clean:
 	@rm -f tests/test1 tests/test2 tests/test_rand tests/test_compile
 	@#@$(foreach test_bin,$(TEST_BINS), rm -f $(test_bin) ; )
@@ -30,7 +37,7 @@ clean:
 	@rm -f *.o
 
 
-test: all
+test: rust_all
 	@$(test $(PYTHON))
 	@echo
 	@echo Testing hand-picked regex\'s:
